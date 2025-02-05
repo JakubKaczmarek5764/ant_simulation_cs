@@ -1,31 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
+using System.Runtime.InteropServices;
 
 namespace AntSimulation
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-public partial class MainWindow : Window
+    public partial class MainWindow : Window
     {
         private List<Ant> ants = new List<Ant>();
-        private List<Ellipse> antShapes = new List<Ellipse>();
+        private AntRenderer antRenderer;
         private DispatcherTimer timer;
-        private Random random = new Random();
-
+        private int antCount = 50_000; 
+        private int width = 1920;
+        private int height = 1080;
         public MainWindow()
         {
             InitializeComponent();
@@ -34,23 +24,14 @@ public partial class MainWindow : Window
 
         private void InitializeSimulation()
         {
-            int antCount = 100;
-            int height = 1080;
-            int width = 1920;
+            
+            antRenderer = new AntRenderer(width, height);
+            SimulationCanvas.Children.Add(antRenderer);
+
+            
             for (int i = 0; i < antCount; i++)
             {
-                var ant = new Ant(width / 2, height / 2);
-                ants.Add(ant);
-
-                // Create a UI representation (Ellipse) for each ant
-                Ellipse ellipse = new Ellipse
-                {
-                    Width = 5,
-                    Height = 5,
-                    Fill = Brushes.White
-                };
-                SimulationCanvas.Children.Add(ellipse);
-                antShapes.Add(ellipse);
+                ants.Add(new Ant(width / 2, height / 2));
             }
 
             // Timer to update simulation
@@ -62,13 +43,65 @@ public partial class MainWindow : Window
 
         private void UpdateSimulation(object sender, EventArgs e)
         {
-            for (int i = 0; i < ants.Count; i++)
+            // Move ants
+            foreach (var ant in ants)
             {
-                ants[i].Move(); // Update ant's position
+                ant.Move();
+            }
 
-                // Update UI position
-                Canvas.SetLeft(antShapes[i], ants[i].X);
-                Canvas.SetTop(antShapes[i], ants[i].Y);
+            // Redraw ants
+            antRenderer.UpdateAnts(ants);
+        }
+    }
+
+    public class AntRenderer : System.Windows.Controls.Image
+    {
+        private WriteableBitmap bitmap;
+        private int width, height;
+        private int[] pixels;
+
+        public AntRenderer(int width, int height)
+        {
+            this.width = width;
+            this.height = height;
+            bitmap = new WriteableBitmap(width, height, 96, 96, PixelFormats.Bgra32, null);
+            Source = bitmap;
+            pixels = new int[width * height];
+        }
+
+        public void UpdateAnts(List<Ant> ants)
+        {
+            Array.Clear(pixels, 0, pixels.Length);
+
+            foreach (var ant in ants)
+            {
+                DrawAntAsCircle(ant, 3);
+            }
+
+            // Write pixels to bitmap
+            bitmap.WritePixels(new Int32Rect(0, 0, width, height), pixels, width * 4, 0);
+        }
+        public void DrawAntAsCircle(Ant ant, int radius)
+        {
+            int x = (int)ant.X;
+            int y = (int)ant.Y;
+            int color = unchecked((int)0xFFFFFFFF);
+
+            for (int dx = -radius; dx <= radius; dx++)
+            {
+                for (int dy = -radius; dy <= radius; dy++)
+                {
+                    if (dx * dx + dy * dy <= radius * radius)
+                    {
+                        int nx = x + dx;
+                        int ny = y + dy;
+
+                        if (nx >= 0 && nx < width && ny >= 0 && ny < height)
+                        {
+                            pixels[ny * width + nx] = color;
+                        }
+                    }
+                }
             }
         }
     }
