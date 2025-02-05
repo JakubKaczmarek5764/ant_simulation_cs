@@ -10,12 +10,12 @@ namespace AntSimulation
 {
     public partial class MainWindow : Window
     {
-        private List<Ant> ants = new List<Ant>();
         private AntRenderer antRenderer;
         private DispatcherTimer timer;
         private int antCount = 50_000; 
         private int width = 1920;
         private int height = 1080;
+        private AntManager antManager;
         public MainWindow()
         {
             InitializeComponent();
@@ -27,13 +27,9 @@ namespace AntSimulation
             
             antRenderer = new AntRenderer(width, height);
             SimulationCanvas.Children.Add(antRenderer);
-
+            antManager = new AntManager();
+            antManager.CreateAnts(antCount, (width / 2, height / 2));
             
-            for (int i = 0; i < antCount; i++)
-            {
-                ants.Add(new Ant(width / 2, height / 2));
-            }
-
             // Timer to update simulation
             timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromMilliseconds(1000 / 60);
@@ -44,13 +40,10 @@ namespace AntSimulation
         private void UpdateSimulation(object sender, EventArgs e)
         {
             // Move ants
-            foreach (var ant in ants)
-            {
-                ant.Move();
-            }
+            antManager.NextFrame(this, EventArgs.Empty);
 
             // Redraw ants
-            antRenderer.UpdateAnts(ants);
+            antRenderer.UpdateAnts(antManager.ants);
         }
     }
 
@@ -83,8 +76,8 @@ namespace AntSimulation
         }
         public void DrawAntAsCircle(Ant ant, int radius)
         {
-            int x = (int)ant.X;
-            int y = (int)ant.Y;
+            int x = (int)ant.Pos.x;
+            int y = (int)ant.Pos.y;
             int color = unchecked((int)0xFFFFFFFF);
 
             for (int dx = -radius; dx <= radius; dx++)

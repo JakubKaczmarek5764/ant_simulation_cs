@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ant_simulation", "ant_simulation\ant_simulation.csproj", "{A0D645D0-7591-43C6-8A54-03353E4F1D48}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AntSimulation", "AntSimulation\AntSimulation.csproj", "{A0D645D0-7591-43C6-8A54-03353E4F1D48}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
