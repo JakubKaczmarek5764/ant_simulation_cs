@@ -1,25 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using AntSimulation;
 
 namespace AntSimulation;
 
 public class AntManager : Manager
 {
-    public List<Ant> ants = new List<Ant>();
-    private Random random = new Random();
+    public List<Ant> Ants = new List<Ant>();
+    private Random _random = new Random();
     public void CreateAnts(int antCount, (double x, double y) pos)
     {
-        Console.WriteLine("CreateAnts");
         for (int i = 0; i < antCount; i++)
         {
-            (double, double) velocity = (random.NextDouble() * 2 - 1, random.NextDouble() * 2 - 1);
-            ants.Add(new Ant(pos, velocity));
+            (double, double) velocity = (_random.NextDouble() * 20 - 10, _random.NextDouble() * 20 - 10);
+            Ants.Add(new Ant(pos, velocity));
         }
     }
-    public void NextFrame(Object sender, EventArgs e)
+    public void NextFrame()
     {
-        foreach (var ant in ants)
+        foreach (var ant in Ants)
         {
             ant.Move();
         }

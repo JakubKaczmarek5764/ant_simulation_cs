@@ -5,7 +5,7 @@ namespace AntSimulation;
 
 public class FoodManager : Manager
 {
-    private List<Food> foods;
+    private List<Food> foods = new List<Food>();
     private static readonly Random random = new Random();
     public ((double, double), double, int) FindClosestFood((double x, double y) pos)
     {
@@ -23,12 +23,13 @@ public class FoodManager : Manager
         }
         return (foods[closestFoodIndex].Pos, minDistance, closestFoodIndex);
     }
-    public void CreateFood(int foodCount, int x, int y, int radius = 0)
+    public void CreateFood(int foodCount, (double x, double y) pos, int radius = 0)
     {
         for (int i = 0; i < foodCount; i++)
         {
-            foods.Add(new Food((random.Next(x - radius, x + radius), random.Next(y - radius, y + radius))));
+            foods.Add(new Food((random.NextDouble() * radius * 2 + pos.x, random.NextDouble() * radius * 2 + pos.y)));
         }
+        Console.WriteLine(foods.Count);
     }
     public void DeleteFood(int foodIndex)
     {
