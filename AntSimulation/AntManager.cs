@@ -6,12 +6,13 @@ namespace AntSimulation;
 public class AntManager : Manager
 {
     public List<Ant> Ants = new List<Ant>();
-    private Random _random = new Random();
+    private static readonly Random Random = new Random();
     public void CreateAnts(int antCount, (double x, double y) pos)
     {
         for (int i = 0; i < antCount; i++)
         {
-            (double, double) velocity = (_random.NextDouble() * 20 - 10, _random.NextDouble() * 20 - 10);
+            
+            (double, double) velocity = (Random.NextDouble() * 20 - 10, Random.NextDouble() * 20 - 10);
             Ants.Add(new Ant(pos, velocity));
         }
     }

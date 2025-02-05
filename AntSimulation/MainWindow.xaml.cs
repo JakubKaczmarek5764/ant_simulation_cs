@@ -13,7 +13,7 @@ namespace AntSimulation
     {
         private AntRenderer antRenderer;
         private DispatcherTimer timer;
-        private int antCount = 50_000; 
+        private int antCount = 100000; 
         private int width = 1920;
         private int height = 1080;
         private AntManager antManager;
@@ -28,7 +28,7 @@ namespace AntSimulation
         {
             
             Point clickPosition = e.GetPosition(SimulationCanvas);
-            foodManager.CreateFood(100, (clickPosition.X, clickPosition.Y), 100);
+            foodManager.CreateFood(25, (clickPosition.X, clickPosition.Y), 50);
         
         }
         private void InitializeSimulation()
@@ -54,7 +54,7 @@ namespace AntSimulation
             antManager.NextFrame();
 
             // Redraw ants
-            antRenderer.UpdateAnts(antManager.Ants);
+            antRenderer.Update(antManager.Ants, foodManager.Foods, pheromoneManager.Pheromones);
         }
     }
 
@@ -73,16 +73,23 @@ namespace AntSimulation
                 pixels = new int[width * height];
             }
 
-            public void UpdateAnts(List<Ant> ants)
+            public void Update(List<Ant> ants, List<Food> foods, List<Pheromone> pheromones)
             {
                 Array.Clear(pixels, 0, pixels.Length);
-
+                
+                foreach (var food in foods)
+                {
+                    DrawPoint(food.Pos, 2, Colors.Red);
+                }
                 foreach (var ant in ants)
                 {
-                    DrawPoint(ant.Pos, 3, Colors.Red);
+                    DrawPoint(ant.Pos, 3, Colors.White);
                 }
-            
-                // Write pixels to bitmap
+                
+                foreach (var pheromone in pheromones)
+                {
+                    DrawPoint(pheromone.Pos, 2, Colors.Blue);
+                }
                 bitmap.WritePixels(new Int32Rect(0, 0, width, height), pixels, width * 4, 0);
             }
             public void DrawPoint((double x, double y) pos, int radius, int color)

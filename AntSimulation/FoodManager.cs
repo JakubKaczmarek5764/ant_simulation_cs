@@ -5,15 +5,15 @@ namespace AntSimulation;
 
 public class FoodManager : Manager
 {
-    private List<Food> foods = new List<Food>();
-    private static readonly Random random = new Random();
+    public List<Food> Foods = new List<Food>();
+    private static readonly Random Random = new Random();
     public ((double, double), double, int) FindClosestFood((double x, double y) pos)
     {
         double minDistance = int.MaxValue;
         int closestFoodIndex = -1;
-        for (int i = 0; i < foods.Count; i++)
+        for (int i = 0; i < Foods.Count; i++)
         {
-            Food food = foods[i];
+            Food food = Foods[i];
             double curDist = sq_distance(food.Pos.x, food.Pos.y, pos.x, pos.y);
             if (curDist < minDistance)
             {
@@ -21,19 +21,19 @@ public class FoodManager : Manager
                 closestFoodIndex = i;
             }
         }
-        return (foods[closestFoodIndex].Pos, minDistance, closestFoodIndex);
+        return (Foods[closestFoodIndex].Pos, minDistance, closestFoodIndex);
     }
     public void CreateFood(int foodCount, (double x, double y) pos, int radius = 0)
     {
         for (int i = 0; i < foodCount; i++)
         {
-            foods.Add(new Food((random.NextDouble() * radius * 2 + pos.x, random.NextDouble() * radius * 2 + pos.y)));
+            Foods.Add(new Food((Random.NextDouble() * radius * 2 + pos.x - radius, Random.NextDouble() * radius * 2 + pos.y - radius)));
         }
-        Console.WriteLine(foods.Count);
+        Console.WriteLine(Foods.Count);
     }
     public void DeleteFood(int foodIndex)
     {
-        foods.RemoveAt(foodIndex);
+        Foods.RemoveAt(foodIndex);
     }
     
 }
