@@ -9,3 +9,8 @@ public class Colors
     public static readonly int Blue = unchecked((int)0xFF0000FF);
 
 }
+
+public class GlobalVariables
+{
+    public static float maxForce = 100;
+}

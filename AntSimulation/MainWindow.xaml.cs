@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -11,9 +12,9 @@ namespace AntSimulation
 {
     public partial class MainWindow : Window
     {
-        private AntRenderer antRenderer;
+        private Renderer _renderer;
         private DispatcherTimer timer;
-        private int antCount = 100000; 
+        private int antCount = 10000; 
         private int width = 1920;
         private int height = 1080;
         private AntManager antManager;
@@ -23,6 +24,15 @@ namespace AntSimulation
         {
             InitializeComponent();
             InitializeSimulation();
+        }
+        private void ForceSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (ForceLabel != null)
+            {
+                GlobalVariables.maxForce = (float)e.NewValue; // Update the global variable
+                ForceLabel.Text = $"Max Force: {GlobalVariables.maxForce}"; // Update the label to reflect the new value
+            }
+            
         }
         private void SimulationCanvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -34,12 +44,12 @@ namespace AntSimulation
         private void InitializeSimulation()
         {
             
-            antRenderer = new AntRenderer(width, height);
-            SimulationCanvas.Children.Add(antRenderer);
+            _renderer = new Renderer(width, height);
+            SimulationCanvas.Children.Add(_renderer);
             antManager = new AntManager();
             foodManager = new FoodManager();
             pheromoneManager = new PheromoneManager();
-            antManager.CreateAnts(antCount, (width / 2, height / 2));
+            antManager.CreateAnts(antCount, new Vector2(width / 2, height / 2));
             
             // Timer to update simulation
             timer = new DispatcherTimer();
@@ -54,17 +64,17 @@ namespace AntSimulation
             antManager.NextFrame();
 
             // Redraw ants
-            antRenderer.Update(antManager.Ants, foodManager.Foods, pheromoneManager.Pheromones);
+            _renderer.Update(antManager.Ants, foodManager.Foods, pheromoneManager.Pheromones);
         }
     }
 
-        public class AntRenderer : System.Windows.Controls.Image
+        public class Renderer : System.Windows.Controls.Image
         {
             private WriteableBitmap bitmap;
             private int width, height;
             private int[] pixels;
 
-            public AntRenderer(int width, int height)
+            public Renderer(int width, int height)
             {
                 this.width = width;
                 this.height = height;
@@ -92,10 +102,10 @@ namespace AntSimulation
                 }
                 bitmap.WritePixels(new Int32Rect(0, 0, width, height), pixels, width * 4, 0);
             }
-            public void DrawPoint((double x, double y) pos, int radius, int color)
+            public void DrawPoint(Vector2 pos, int radius, int color)
             {
-                int x = (int)pos.x;
-                int y = (int)pos.y;
+                int x = (int)pos.X;
+                int y = (int)pos.Y;
 
                 for (int dx = -radius; dx <= radius; dx++)
                 {

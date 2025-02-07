@@ -1,8 +1,10 @@
-﻿namespace AntSimulation;
+﻿using System.Numerics;
+
+namespace AntSimulation;
 
 public class Food : Entity
 {
-    public Food((double x, double y) pos) : base(pos)
+    public Food(Vector2 pos) : base(pos)
     {
     }
 }

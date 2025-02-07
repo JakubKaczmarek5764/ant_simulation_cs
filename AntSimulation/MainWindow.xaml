@@ -5,8 +5,34 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AntSimulation"
         mc:Ignorable="d"
+        WindowState="Maximized"
+        WindowStyle="None"
+        ResizeMode="NoResize"
         Title="MainWindow" Height="1080" Width="1920">
     <Grid>
+        <!-- Canvas for Simulation -->
         <Canvas x:Name="SimulationCanvas" Background="Black" MouseDown="SimulationCanvas_MouseDown"/>
+
+        <!-- Slider to change max force -->
+        <Slider x:Name="ForceSlider" 
+                Minimum="0" 
+                Maximum="100" 
+                Value="100" 
+                TickFrequency="0.1" 
+                IsSnapToTickEnabled="True"
+                VerticalAlignment="Bottom" 
+                Margin="10"
+                Width="400" 
+                HorizontalAlignment="Center" 
+                ValueChanged="ForceSlider_ValueChanged"/>
+
+        <!-- Label to display current force value -->
+        <TextBlock x:Name="ForceLabel" 
+                   VerticalAlignment="Bottom" 
+                   HorizontalAlignment="Center" 
+                   Margin="10,0,0,40" 
+                   Foreground="White" 
+                   FontSize="16" 
+                   Text="Max Force: 100"/>
     </Grid>
 </Window>

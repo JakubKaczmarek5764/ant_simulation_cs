@@ -1,10 +1,12 @@
-﻿namespace AntSimulation;
+﻿using System.Numerics;
+
+namespace AntSimulation;
 
 public class Entity
 {
-    public (double x, double y) Pos { get; protected set; }
+    public Vector2 Pos { get; protected set; }
 
-    public Entity((double x, double y) pos)
+    public Entity(Vector2 pos)
     {
         Pos = pos;
     }
