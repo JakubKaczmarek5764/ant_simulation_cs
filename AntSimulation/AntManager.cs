@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Threading;
 
 namespace AntSimulation;
 
@@ -23,20 +24,21 @@ public class AntManager : Manager
         }
     }
 
-    public void CreateAnts(int antCount, Vector2 pos, double speed = 2, double foodDetectionRadius = 100, double pheromoneDetectionRadius = 200)
+    public void CreateAnts(int antCount, Vector2 pos)
     {
         for (int i = 0; i < antCount; i++)
         {
             Vector2 randomVelocity =
                 new Vector2((float)Random.NextDouble() * 20 - 10, (float)Random.NextDouble() * 20 - 10);
-            Ants.Add(new Ant(pos, randomVelocity, foodDetectionRadius, pheromoneDetectionRadius));
+            Ants.Add(new Ant(pos, randomVelocity));
         }
     }
     public void NextFrame()
     {
         foreach (var ant in Ants)
         {
-            if (ant.ChasedFoodIndex == -1 && !foodManager.IsEmpty())
+
+            if (!ant.HasFood && ant.ChasedFoodIndex == -1 && !foodManager.IsEmpty())
             {
                 TryToChaseFood(ant);
             }
@@ -45,25 +47,44 @@ public class AntManager : Manager
                 TryToChasePheromone(ant);
             }
             ant.Move();
-            if (ant.ChasedFoodIndex != -1 && foodManager.IsNull(ant.ChasedFoodIndex)) ant.ChasedFoodIndex = -1;
-            else if (ant.ChasedPheromoneIndex != -1 && pheromoneManager.HasDecayed(ant.ChasedPheromoneIndex)) ant.ChasedPheromoneIndex = -1;
-            foodManager.Clear();
-            pheromoneManager.Clear();
-
+            // Console.WriteLine("length inside ant.move:"+foodManager.Foods.Count);
         }
+
+        foreach (var ant in Ants)
+        {
+            if (ant.ChasedFoodIndex != -1 && (foodManager.IsNull(ant.ChasedFoodIndex) || ant.ChasedFoodId == foodManager.GetFoodId(ant.ChasedFoodIndex)))
+            {
+                ant.ChasedFoodIndex = -1;
+                ant.ChasedFoodId = -1;
+                ant.Destination = Vector2.Zero;
+            }
+            else if (ant.ChasedPheromoneIndex != -1 && pheromoneManager.HasDecayed(ant.ChasedPheromoneIndex)) ant.ChasedPheromoneIndex = -1;
+        }
+        foodManager.Clear();
+        pheromoneManager.Clear();
     }
     private void TryToChaseFood(Ant ant)
     {
+        
         (double dist, int foodIndex, Vector2 foodPos) = foodManager.FindClosestFood(ant.Pos);
-        if (dist < ant.FoodDetectionRadius) return;
+        
+        if (dist > GlobalVariables.FoodDetectionRadiusSquared) return;
         ant.ChasedFoodIndex = foodIndex;
         ant.Destination = foodPos;
         ant.ChasedPheromoneIndex = -1;
+        ant.ChasedFoodId = foodManager.GetFoodId(foodIndex);
+        
+        if (dist > GlobalVariables.FoodPickupRadiusSquared) return;
+        foodManager.PickupFood(foodIndex);
+        ant.HasFood = true;
+        ant.ChasedFoodIndex = -1;
+        ant.Destination = Vector2.Zero;
+        
     }
     private void TryToChasePheromone(Ant ant)
     {
         (double dist, int pheromoneIndex, Vector2 pheromonePos) = pheromoneManager.FindClosestPheromone(ant.Pos);
-        if (dist < ant.PheromoneDetectionRadius) return;
+        if (dist < GlobalVariables.PheromoneDetectionRadiusSquared) return;
         ant.ChasedPheromoneIndex = pheromoneIndex;
         ant.Destination = pheromonePos;
     }

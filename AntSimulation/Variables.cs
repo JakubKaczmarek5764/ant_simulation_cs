@@ -13,4 +13,8 @@ public class Colors
 public class GlobalVariables
 {
     public static float maxForce = 100;
+    public static float maxSpeed = 2;
+    public static double FoodDetectionRadiusSquared = 1000;
+    public static double PheromoneDetectionRadiusSquared = 200;
+    public static double FoodPickupRadiusSquared = 100;
 }

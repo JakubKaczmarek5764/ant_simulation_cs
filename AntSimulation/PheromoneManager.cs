@@ -18,7 +18,7 @@ public class PheromoneManager : Manager
             return _instance;
         }
     }
-    public PheromoneManager()
+    private PheromoneManager()
     {
         
     }

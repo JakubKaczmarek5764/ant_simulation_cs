@@ -6,9 +6,11 @@ namespace AntSimulation;
 
 public class FoodManager : Manager
 {
-    public List<Food> Foods = new List<Food>();
+    public List<Food?> Foods = new List<Food?>();
     private static readonly Random Random = new Random();
     private static FoodManager _instance;
+    private int _nextFoodId;
+    public int FoodCount { get; private set; }
     public static FoodManager Instance
     {
         get
@@ -20,14 +22,19 @@ public class FoodManager : Manager
             return _instance;
         }
     }
+    private FoodManager()
+    {
+        
+    }
     public (double, int, Vector2) FindClosestFood(Vector2 antPos)
     {
         double minDistance = int.MaxValue;
         int closestFoodIndex = -1;
         for (int i = 0; i < Foods.Count; i++)
         {
+            if (Foods[i] == null) continue;
             Food food = Foods[i];
-            double curDist = Vector2.Distance(food.Pos, antPos);
+            double curDist = Vector2.DistanceSquared(food.Pos, antPos);
             if (curDist < minDistance)
             {
                 minDistance = curDist;
@@ -36,17 +43,18 @@ public class FoodManager : Manager
         }
         return (minDistance, closestFoodIndex, Foods[closestFoodIndex].Pos);
     }
-    public void CreateFood(int foodCount, (double x, double y) pos, int radius = 0)
+    public void CreateFood(int foodCount, Vector2 pos, int radius = 0)
     {
         for (int i = 0; i < foodCount; i++)
         {
-            Foods.Add(new Food(new Vector2((float)(Random.NextDouble() * radius * 2 + pos.x - radius), (float)(Random.NextDouble() * radius * 2 + pos.y - radius))));
+            Foods.Add(new Food(new Vector2((float)(Random.NextDouble() * radius * 2 + pos.X - radius), (float)(Random.NextDouble() * radius * 2 + pos.Y - radius)), _nextFoodId));
+            _nextFoodId++;
+            FoodCount++;
         }
-        Console.WriteLine(Foods.Count);
     }
     public bool IsNull(int foodIndex)
     {
-        return Foods[foodIndex] == null;
+        return foodIndex + 1 > Foods.Count || Foods[foodIndex] == null;
     }
 
     public void Clear()
@@ -55,6 +63,23 @@ public class FoodManager : Manager
     }
     public bool IsEmpty()
     {
-        return Foods.Count == 0;
+        return FoodCount == 0;
+    }
+    public void PickupFood(int foodIndex)
+    {
+        Foods[foodIndex] = null;
+        FoodCount--;
+        
+    }
+    public void PrintFoods()
+    {
+        foreach (var food in Foods)
+        {
+            Console.WriteLine(food);
+        }
+    }
+    public int GetFoodId(int foodIndex)
+    {
+        return Foods[foodIndex].Id;
     }
 }
