@@ -1,4 +1,6 @@
-﻿namespace AntSimulation;
+﻿using System;
+
+namespace AntSimulation;
 
 public class Colors
 {
@@ -7,14 +9,17 @@ public class Colors
     public static readonly int Red = unchecked((int)0xFFFF0000);
     public static readonly int Green = unchecked((int)0xFF00FF00);
     public static readonly int Blue = unchecked((int)0xFF0000FF);
-
+    public static readonly int Yellow = unchecked((int)0xFFFFFF00);
 }
 
 public class GlobalVariables
 {
-    public static float maxForce = 100;
-    public static float maxSpeed = 2;
-    public static double FoodDetectionRadiusSquared = 1000;
-    public static double PheromoneDetectionRadiusSquared = 200;
-    public static double FoodPickupRadiusSquared = 100;
+    public static float MaxForce = 100;
+    public static readonly float MaxSpeed = 2;
+    public static readonly double FoodDetectionRadiusSquared = Math.Pow(100, 2);
+    public static readonly double PheromoneDetectionRadiusSquared = Math.Pow(200, 2);
+    public static readonly double FoodPickupRadiusSquared = 100;
+    public static readonly int PheromoneLifeTime = 300;
+    public static readonly int PheromoneCooldown = 10;
+    
 }

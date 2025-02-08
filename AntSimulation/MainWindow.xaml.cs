@@ -14,7 +14,7 @@ namespace AntSimulation
     {
         private Renderer _renderer;
         private DispatcherTimer timer;
-        private int antCount = 1000; 
+        private int antCount = 10; 
         private int width = 1920;
         private int height = 1080;
         private AntManager antManager;
@@ -29,8 +29,8 @@ namespace AntSimulation
         {
             if (ForceLabel != null)
             {
-                GlobalVariables.maxForce = (float)e.NewValue; // Update the global variable
-                ForceLabel.Text = $"Max Force: {GlobalVariables.maxForce}"; // Update the label to reflect the new value
+                GlobalVariables.MaxForce = (float)e.NewValue; // Update the global variable
+                ForceLabel.Text = $"Max Force: {GlobalVariables.MaxForce}"; // Update the label to reflect the new value
             }
             
         }
@@ -50,7 +50,6 @@ namespace AntSimulation
             foodManager = FoodManager.Instance;
             pheromoneManager = PheromoneManager.Instance;
             antManager.CreateAnts(antCount, new Vector2(width / 2, height / 2));
-            // foodManager.CreateFood(25, new Vector2(width / 2, height / 2));
             // Timer to update simulation
             timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromMilliseconds(1000 / 60);
@@ -62,9 +61,10 @@ namespace AntSimulation
         {
             // Move ants
             antManager.NextFrame();
-
+            
+            pheromoneManager.DecayPheromones();
             // Redraw ants
-            _renderer.Update(antManager.Ants, foodManager.Foods, pheromoneManager.Pheromones);
+            _renderer.Update(antManager.Ants, foodManager.Foods, pheromoneManager.PheromonesLists);
         }
     }
 
@@ -83,22 +83,26 @@ namespace AntSimulation
                 pixels = new int[width * height];
             }
 
-            public void Update(List<Ant> ants, List<Food> foods, List<Pheromone> pheromones)
+            public void Update(List<Ant?> ants, List<Food?> foods, List<List<Pheromone?>> pheromones)
             {
                 Array.Clear(pixels, 0, pixels.Length);
-                
                 foreach (var food in foods)
                 {
                     DrawPoint(food.Pos, 2, Colors.Red);
                 }
-                foreach (var ant in ants)
+
+                for (int i = 0; i < pheromones.Count; i++)
                 {
-                    DrawPoint(ant.Pos, 3, Colors.White);
+                    int color = i == 0 ? Colors.Blue : Colors.Green;
+                    foreach (var pheromone in pheromones[i])
+                    {
+                        DrawPoint(pheromone.Pos, 2, color);
+                    }
                 }
                 
-                foreach (var pheromone in pheromones)
+                foreach (var ant in ants)
                 {
-                    DrawPoint(pheromone.Pos, 2, Colors.Blue);
+                    DrawPoint(ant.Pos, 3, ant.HasFood? Colors.Yellow : Colors.White);
                 }
                 bitmap.WritePixels(new Int32Rect(0, 0, width, height), pixels, width * 4, 0);
             }

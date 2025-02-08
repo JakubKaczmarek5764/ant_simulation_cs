@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
+using System.Windows.Documents;
 
 namespace AntSimulation;
 
 public class PheromoneManager : Manager
 {
-    public List<Pheromone> Pheromones = new List<Pheromone>();
+    public List<List<Pheromone?>> PheromonesLists = new List<List<Pheromone?>>();
     private static PheromoneManager _instance;
     public static PheromoneManager Instance
     {
@@ -20,15 +21,22 @@ public class PheromoneManager : Manager
     }
     private PheromoneManager()
     {
-        
+        for (int i = 0; i < 2; i++)
+        {
+            PheromonesLists.Add(new List<Pheromone?>());
+        }
     }
-    public (double, int, Vector2 pos) FindClosestPheromone(Vector2 pos)
+    public void CreatePheromone(Vector2 pos, int type)
+    {
+        PheromonesLists[type].Add(new Pheromone(pos, type, GlobalVariables.PheromoneLifeTime));
+    }
+    public (double, int, Vector2 pos) FindClosestPheromone(Vector2 pos, int type)
     {
         double minDistance = int.MaxValue;
         int closestPheromoneIndex = -1;
-        for (int i = 0; i < Pheromones.Count; i++)
+        for (int i = 0; i < PheromonesLists[type].Count; i++)
         {
-            Pheromone pheromone = Pheromones[i];
+            Pheromone pheromone = PheromonesLists[type][i];
             double curDist = sq_distance(pheromone.Pos.X, pheromone.Pos.Y, pos.X, pos.Y);
             if (curDist < minDistance)
             {
@@ -36,26 +44,34 @@ public class PheromoneManager : Manager
                 closestPheromoneIndex = i;
             }
         }
-        return (minDistance, closestPheromoneIndex, Pheromones[closestPheromoneIndex].Pos);
+        return (minDistance, closestPheromoneIndex, PheromonesLists[type][closestPheromoneIndex].Pos);
     }
+    
     public void DecayPheromones()
     {
-        foreach (var pheromone in Pheromones)
+        
+        foreach (var pheromoneList in PheromonesLists)
         {
-            pheromone.Decay();
+            foreach (var pheromone in pheromoneList)
+            {
+                pheromone.Decay();
+            }
         }
     }
 
     public void Clear()
     {
-        Pheromones.RemoveAll(x => x.LifeTime <= 0);
+        foreach(var pheromoneList in PheromonesLists)
+        {
+            pheromoneList.RemoveAll(x => x.LifeTime <= 0);
+        }
     }
-    public bool HasDecayed(int pheromoneIndex)
+    public bool HasDecayed(int pheromoneIndex, int type)
     {
-        return Pheromones[pheromoneIndex].LifeTime <= 0;
+        return PheromonesLists[type][pheromoneIndex].LifeTime <= 0;
     }
-    public bool IsEmpty()
+    public bool IsEmpty(int type)
     {
-        return Pheromones.Count == 0;
+        return PheromonesLists[type].Count == 0;
     }
 }
