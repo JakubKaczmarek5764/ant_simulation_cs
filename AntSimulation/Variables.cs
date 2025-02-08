@@ -21,5 +21,6 @@ public class GlobalVariables
     public static readonly double FoodPickupRadiusSquared = 100;
     public static readonly int PheromoneLifeTime = 300;
     public static readonly int PheromoneCooldown = 10;
-    
+    public static readonly double PheromoneCloseEnough = Math.Pow(20, 2);
+
 }

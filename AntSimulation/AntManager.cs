@@ -63,7 +63,7 @@ public class AntManager : Manager
                 ant.Destination = Vector2.Zero;
             }
             else if (ant.ChasedPheromoneIndex != -1 &&
-                     pheromoneManager.HasDecayed(ant.ChasedPheromoneIndex, ant.ChasedPheromoneType))
+                     (pheromoneManager.HasDecayed(ant.ChasedPheromoneIndex, ant.ChasedPheromoneType) || Vector2.DistanceSquared(ant.Pos, ant.Destination) < GlobalVariables.PheromoneCloseEnough))
             {
                 ant.ChasedPheromoneIndex = -1;
                 ant.ChasedPheromoneType = -1;
@@ -79,15 +79,11 @@ public class AntManager : Manager
             }
             _pheromoneCooldown = GlobalVariables.PheromoneCooldown;
         }
-        foodManager.Clear();
-        pheromoneManager.Clear();
         _pheromoneCooldown--;
     }
     private void TryToChaseFood(Ant ant)
     {
-        
         (double dist, int foodIndex, Vector2 foodPos) = foodManager.FindClosestFood(ant.Pos);
-        
         if (dist > GlobalVariables.FoodDetectionRadiusSquared) return;
         ant.ChasedFoodIndex = foodIndex;
         ant.Destination = foodPos;
@@ -103,8 +99,8 @@ public class AntManager : Manager
     }
     private void TryToChasePheromone(Ant ant, int type)
     {
-        (double dist, int pheromoneIndex, Vector2 pheromonePos) = pheromoneManager.FindClosestPheromone(ant.Pos, type);
-        if (dist < GlobalVariables.PheromoneDetectionRadiusSquared) return;
+        (double dist, int pheromoneIndex, Vector2 pheromonePos) = pheromoneManager.FindClosestPheromone(ant.Pos, ant.Velocity, type);
+        if (dist > GlobalVariables.PheromoneDetectionRadiusSquared) return;
         ant.ChasedPheromoneIndex = pheromoneIndex;
         ant.Destination = pheromonePos;
         ant.ChasedPheromoneType = type;

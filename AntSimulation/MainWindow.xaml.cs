@@ -14,7 +14,7 @@ namespace AntSimulation
     {
         private Renderer _renderer;
         private DispatcherTimer timer;
-        private int antCount = 10; 
+        private int antCount = 1000; 
         private int width = 1920;
         private int height = 1080;
         private AntManager antManager;
@@ -63,6 +63,8 @@ namespace AntSimulation
             antManager.NextFrame();
             
             pheromoneManager.DecayPheromones();
+            foodManager.Clear();
+            pheromoneManager.Clear();
             // Redraw ants
             _renderer.Update(antManager.Ants, foodManager.Foods, pheromoneManager.PheromonesLists);
         }
