@@ -14,7 +14,7 @@ namespace AntSimulation
     {
         private Renderer _renderer;
         private DispatcherTimer timer;
-        private int antCount = 1; 
+        private int antCount = 1000; 
         private int width = 1920;
         private int height = 1080;
         private AntManager antManager;
@@ -62,11 +62,10 @@ namespace AntSimulation
             // Move ants
             antManager.NextFrame();
             
-            pheromoneManager.DecayPheromones();
+            pheromoneManager.Decay();
             foodManager.Clear();
-            pheromoneManager.Clear();
             // Redraw ants
-            _renderer.Update(antManager.Ants, foodManager.Foods, pheromoneManager.PheromonesLists);
+            _renderer.Update(antManager.Ants, foodManager.Foods, pheromoneManager.Grid);
         }
     }
 
@@ -85,23 +84,36 @@ namespace AntSimulation
                 pixels = new int[width * height];
             }
 
-            public void Update(List<Ant?> ants, List<Food?> foods, List<List<Pheromone?>> pheromones)
+            public void Update(List<Ant?> ants, List<Food?> foods, Grid pheromones)
             {
                 Array.Clear(pixels, 0, pixels.Length);
+                for (int i = 0; i < GlobalVariables.GridWidth; i++)
+                {
+                    for (int j = 0; j < GlobalVariables.GridHeight; j++)
+                    {
+                        int color = pheromones.GetColor(i, j);
+                        int cellWidth = (int)(GlobalVariables.AreaWidth / GlobalVariables.GridWidth);
+                        int cellHeight = (int)(GlobalVariables.AreaHeight / GlobalVariables.GridHeight);
+                
+                        for (int dx = 0; dx < cellWidth; dx++)
+                        {
+                            for (int dy = 0; dy < cellHeight; dy++)
+                            {
+                                int px = i * cellWidth + dx;
+                                int py = j * cellHeight + dy;
+                        
+                                if (px >= 0 && px < width && py >= 0 && py < height)
+                                {
+                                    pixels[py * width + px] = color;
+                                }
+                            }
+                        }
+                    }
+                }
                 foreach (var food in foods)
                 {
                     DrawPoint(food.Pos, 2, Colors.Red);
                 }
-
-                for (int i = 0; i < pheromones.Count; i++)
-                {
-                    int color = i == 0 ? Colors.Blue : Colors.Green;
-                    foreach (var pheromone in pheromones[i])
-                    {
-                        DrawPoint(pheromone.Pos, 2, color);
-                    }
-                }
-                
                 foreach (var ant in ants)
                 {
                     DrawPoint(ant.Pos, 3, ant.HasFood? Colors.Yellow : Colors.White);

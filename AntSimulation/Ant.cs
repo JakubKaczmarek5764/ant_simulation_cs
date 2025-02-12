@@ -10,51 +10,44 @@ namespace AntSimulation
         public Vector2 Velocity { get; set; }
         public int ChasedFoodIndex { get; set; }
         public int ChasedFoodId { get; set; }
-        public int ChasedPheromoneIndex { get; set; }
-        public int ChasedPheromoneType { get; set; }
         public Vector2 Destination { get; set; }
         public bool HasFood { get; set; }
         private static readonly Random Random = new Random();
-
+        private Vector2 AntHill = new Vector2(GlobalVariables.AreaWidth / 2, GlobalVariables.AreaHeight / 2);
         public Ant(Vector2 pos, Vector2 velocity) : base(pos)
         {
             ChasedFoodIndex = -1;
-            ChasedPheromoneIndex = -1;
             Velocity = velocity;
 
         }
 
         public void Move()
         {
+            if (HasFood && Vector2.DistanceSquared(AntHill, Pos) < GlobalVariables.FoodPickupRadiusSquared)
+            {
+                // ant reached anthill
+                HasFood = false;
+                ChasedFoodIndex = -1;
+                Destination = Vector2.Zero;
+            }
             if (Destination == Vector2.Zero)
             {
                 Velocity = Wander(Pos, Velocity);
 
             }
-            else Velocity = SteerTowards(Pos, Velocity, Destination);
+            else Velocity += SteerTowards(Pos, Velocity, Destination);
+            Vector2 nextPos = Pos + Velocity;
+            if (nextPos.X < 0) Velocity = new Vector2(Velocity.X * -1, Velocity.Y);
+            if (nextPos.X > GlobalVariables.AreaWidth) Velocity = new Vector2(Velocity.X * -1, Velocity.Y);
+            if (nextPos.Y < 0) Velocity = new Vector2(Velocity.X, Velocity.Y * -1);
+            if (nextPos.Y > GlobalVariables.AreaHeight) Velocity = new Vector2(Velocity.X, Velocity.Y * -1);
             Pos += Velocity;
             
         }
 
         public Vector2 Wander(Vector2 position, Vector2 velocity)
         {
-
-            float angle = (float)(Random.NextDouble() * Math.PI * 2); // Random angle (0 to 360 degrees)
-            Vector2 randomSteering =
-                new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)) * GlobalVariables.MaxForce;
-
-            // Step 2: Apply steering force (without unnecessary normalizations)
-            Vector2 newVelocity = velocity + randomSteering;
-
-            // Step 3: Limit velocity to maxSpeed (only normalize if necessary)
-            float speed = newVelocity.Length();
-            if (speed > GlobalVariables.MaxSpeed)
-            {
-                newVelocity *= GlobalVariables.MaxSpeed / speed; // Scale down instead of normalizing
-            }
-
-            // Step 4: Return new velocity (position should be updated externally)
-            return newVelocity;
+            return Turn(Random.Next(-GlobalVariables.AntTurnAngle, GlobalVariables.AntTurnAngle));
         }
 
         private Vector2 SteerTowards(Vector2 position, Vector2 velocity, Vector2 target)
@@ -86,6 +79,16 @@ namespace AntSimulation
 
             return steeringForce;
         }
-
+        public Vector2 Turn(float degrees)
+        {
+            float radians = MathF.PI * degrees / 180f;
+            float cos = MathF.Cos(radians);
+            float sin = MathF.Sin(radians);
+    
+            return new Vector2(
+                Velocity.X * cos - Velocity.Y * sin,
+                Velocity.X * sin + Velocity.Y * cos
+            );
+        }
     }
 }

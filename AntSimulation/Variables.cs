@@ -14,13 +14,20 @@ public class Colors
 
 public class GlobalVariables
 {
-    public static float MaxForce = .5f;
-    public static readonly float MaxSpeed = 2;
+    public static float MaxForce = 1.5f;
+    public static readonly float MaxSpeed = 3;
     public static readonly double FoodDetectionRadiusSquared = Math.Pow(100, 2);
-    public static readonly double PheromoneDetectionRadiusSquared = Math.Pow(200, 2);
     public static readonly double FoodPickupRadiusSquared = 100;
-    public static readonly int PheromoneLifeTime = 300;
-    public static readonly int PheromoneCooldown = 10;
-    public static readonly double PheromoneCloseEnough = Math.Pow(20, 2);
-
+    public static readonly int PheromoneCooldown = 5;
+    public static readonly int AreaWidth = 1920;
+    public static readonly int AreaHeight = 1080;
+    public static readonly int GridWidth = 384;
+    public static readonly int GridHeight = 216;
+    public static readonly int PheromoneTypesCount = 2;
+    public static readonly int PheromoneAddIntensity = 50;
+    public static readonly int AntTurnAngle = 15;
+    public static readonly int PheromoneDetectionAngle = 30;
+    public static readonly int PheromoneDetectionDistance = 20;
+    public static readonly int PheromoneAreaSampleRadius = 50;
+    public static readonly int PheromoneMaxIntensity = 1000;
 }

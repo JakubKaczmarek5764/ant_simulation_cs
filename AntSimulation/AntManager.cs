@@ -24,15 +24,23 @@ public class AntManager : Manager
             return _instance;
         }
     }
-
+    private AntManager()
+    {
+        
+    }
     public void CreateAnts(int antCount, Vector2 pos)
     {
         for (int i = 0; i < antCount; i++)
         {
             Vector2 randomVelocity =
-                new Vector2((float)Random.NextDouble() * 20 - 10, (float)Random.NextDouble() * 20 - 10);
+                RandomUnitVector() * GlobalVariables.MaxSpeed;
             Ants.Add(new Ant(pos, randomVelocity));
         }
+    }
+    public static Vector2 RandomUnitVector()
+    {
+        double angle = Random.NextDouble() * 2 * Math.PI;
+        return new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
     }
     public void NextFrame()
     {
@@ -43,15 +51,11 @@ public class AntManager : Manager
             {
                 TryToChaseFood(ant);
             }
-            if (!ant.HasFood && !pheromoneManager.IsEmpty(1))
+            if (ant.Destination.Equals(Vector2.Zero))
             {
-                TryToChasePheromone(ant, 1);
+                TryToChasePheromone(ant);
             }
-
-            if (ant.HasFood && !pheromoneManager.IsEmpty(0))
-            {
-                TryToChasePheromone(ant, 0);
-            }
+            
             ant.Move();
         }
         foreach (var ant in Ants) // Verifying if food has been picked up
@@ -62,20 +66,14 @@ public class AntManager : Manager
                 ant.ChasedFoodId = -1;
                 ant.Destination = Vector2.Zero;
             }
-            else if (ant.ChasedPheromoneIndex != -1 &&
-                     (pheromoneManager.HasDecayed(ant.ChasedPheromoneIndex, ant.ChasedPheromoneType) || Vector2.DistanceSquared(ant.Pos, ant.Destination) < GlobalVariables.PheromoneCloseEnough))
-            {
-                ant.ChasedPheromoneIndex = -1;
-                ant.ChasedPheromoneType = -1;
-                ant.Destination = Vector2.Zero;
-            }
+
         }
 
         if (_pheromoneCooldown == 0)
         {
             foreach (var ant in Ants) // Leaving pheromones
             {
-                pheromoneManager.CreatePheromone(ant.Pos, ant.HasFood ? 1 : 0);
+                pheromoneManager.AddIntensity(ant.Pos, ant.HasFood ? 1 : 0, GlobalVariables.PheromoneAddIntensity);
             }
             _pheromoneCooldown = GlobalVariables.PheromoneCooldown;
         }
@@ -87,7 +85,6 @@ public class AntManager : Manager
         if (dist > GlobalVariables.FoodDetectionRadiusSquared) return;
         ant.ChasedFoodIndex = foodIndex;
         ant.Destination = foodPos;
-        ant.ChasedPheromoneIndex = -1;
         ant.ChasedFoodId = foodManager.GetFoodId(foodIndex);
         
         if (dist > GlobalVariables.FoodPickupRadiusSquared) return;
@@ -97,27 +94,58 @@ public class AntManager : Manager
         ant.Destination = Vector2.Zero;
         
     }
-    private void TryToChasePheromone(Ant ant, int type)
+    private void TryToChasePheromone(Ant ant)
     {
-        (double dist, int pheromoneIndex, Vector2 pheromonePos) = pheromoneManager.FindClosestPheromone(ant.Pos, ant.Velocity, type);
-        if (dist > GlobalVariables.PheromoneDetectionRadiusSquared) return;
-        ant.ChasedPheromoneIndex = pheromoneIndex;
-        ant.Destination = pheromonePos;
-        ant.ChasedPheromoneType = type;
+        Vector2 front = ant.Pos + GetDirection(ant.Velocity, 0) * GlobalVariables.PheromoneDetectionDistance;
+        Vector2 left = ant.Pos + GetDirection(ant.Velocity, -GlobalVariables.PheromoneDetectionAngle) * GlobalVariables.PheromoneDetectionDistance;
+        Vector2 right = ant.Pos + GetDirection(ant.Velocity, GlobalVariables.PheromoneDetectionAngle) * GlobalVariables.PheromoneDetectionDistance;
+        
+        double frontIntensity = pheromoneManager.GetAverageIntensity(front, ant.HasFood ? 0 : 1, GlobalVariables.PheromoneAreaSampleRadius);
+        double leftIntensity = pheromoneManager.GetAverageIntensity(left, ant.HasFood ? 0 : 1, GlobalVariables.PheromoneAreaSampleRadius);
+        double rightIntensity = pheromoneManager.GetAverageIntensity(right, ant.HasFood ? 0 : 1, GlobalVariables.PheromoneAreaSampleRadius);
+
+        if (frontIntensity == 0 && leftIntensity == 0 && rightIntensity == 0)
+        {
+            return;
+        }
+        if (frontIntensity > leftIntensity && frontIntensity > rightIntensity)
+        {
+            // Chase front
+        }
+        else if (leftIntensity > frontIntensity && leftIntensity > rightIntensity)
+        {
+            // Chase left
+            ant.Turn(-GlobalVariables.AntTurnAngle);
+        }
+        else if (rightIntensity > frontIntensity && rightIntensity > leftIntensity)
+        {
+            // Chase right
+            ant.Turn(GlobalVariables.AntTurnAngle);
+
+        }
+
     }
-            /*
-             * mrowki beda przechowywac wskaznik do elementu w tablicy
-             * w tej funkcji bedzie sprawdzane czy element w tablicy nie jest nullem, jezeli jest to bedzie szukany nowy food
-             * mrowka jak podniesie jedzenie to bedzie ustawiac element w tablicy na null
-             * w food manager bedzie funkcja ktora bedzie czyscic tablice z nulli, ale bedzie sie to dzialo dopiero po calej petli w tej funkcji, na samym koncu
-             * w ten sposob bedziemy regularnie czyscic tablice i aktualizowac indexy
-             * 
-             */
-            
-            /*
-             * jezeli chodzi o feromony to tak samo mrowka bedzie przechowywac wskaznik do elementu w tablicy
-             * jezeli wsaznik bedzie nullem to bedzie szukany nowy feromon
-             * do feromonow mozna uzywac spatial partitioning albo quadtree jak sie okaze ze mozna
-             * 
-             */
+
+    private static Vector2 VelocityTowards(Vector2 pos, Vector2 target, float length)
+    {
+        return Vector2.Normalize(target - pos) * length;
+    }
+    
+
+    private static Vector2 GetDirection(Vector2 velocity, float angleDegrees)
+    {
+        if (velocity.LengthSquared() == 0) return Vector2.UnitX; // Prevent divide by zero
+
+        velocity = Vector2.Normalize(velocity); // Normalize to get direction
+
+        float angleRadians = MathF.PI * angleDegrees / 180f; // Convert to radians
+        float cosA = MathF.Cos(angleRadians);
+        float sinA = MathF.Sin(angleRadians);
+
+        // Apply 2D rotation matrix:
+        return new Vector2(
+            velocity.X * cosA - velocity.Y * sinA,
+            velocity.X * sinA + velocity.Y * cosA
+        );
+    }
 }
