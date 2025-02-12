@@ -14,7 +14,7 @@ public class Colors
 
 public class GlobalVariables
 {
-    public static float MaxForce = 100;
+    public static float MaxForce = .5f;
     public static readonly float MaxSpeed = 2;
     public static readonly double FoodDetectionRadiusSquared = Math.Pow(100, 2);
     public static readonly double PheromoneDetectionRadiusSquared = Math.Pow(200, 2);

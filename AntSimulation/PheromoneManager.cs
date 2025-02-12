@@ -121,7 +121,7 @@ public class PheromoneManager : Manager
     }
     public bool HasDecayed(int pheromoneIndex, int type)
     {
-        return PheromonesLists[type][pheromoneIndex].LifeTime <= 0;
+        return pheromoneIndex + 1 > PheromonesLists[type].Count || PheromonesLists[type][pheromoneIndex].LifeTime <= 0;
     }
     public bool IsEmpty(int type)
     {
