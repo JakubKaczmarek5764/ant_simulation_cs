@@ -25,12 +25,12 @@ namespace AntSimulation
             InitializeComponent();
             InitializeSimulation();
         }
-        private void ForceSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (ForceLabel != null)
+            if (Label != null)
             {
-                GlobalVariables.PheromoneFollwingDecisionThreshold = (float)e.NewValue; // Update the global variable
-                ForceLabel.Text = $"Threshold: {GlobalVariables.PheromoneFollwingDecisionThreshold}"; // Update the label to reflect the new value
+                GlobalVariables.PheromoneFollwingDecisionThreshold = (float)e.NewValue; 
+                Label.Text = $"Threshold: {GlobalVariables.PheromoneFollwingDecisionThreshold}";
             }
             
         }
@@ -38,7 +38,7 @@ namespace AntSimulation
         {
             
             Point clickPosition = e.GetPosition(SimulationCanvas);
-            foodManager.CreateFood(75, new Vector2((float)clickPosition.X, (float)clickPosition.Y), 25);
+            foodManager.CreateFood(GlobalVariables.FoodSpawnCount, new Vector2((float)clickPosition.X, (float)clickPosition.Y), GlobalVariables.FoodSpawnRadius);
         
         }
         private void InitializeSimulation()

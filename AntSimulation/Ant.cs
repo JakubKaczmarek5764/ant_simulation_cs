@@ -49,39 +49,31 @@ namespace AntSimulation
 
         public Vector2 Wander(Vector2 position, Vector2 velocity)
         {
-            return Turn(Random.Next(-GlobalVariables.AntTurnAngle, GlobalVariables.AntTurnAngle));
+            return GetRotatedVelocity(Random.Next(-GlobalVariables.MaxAntTurnAngle, GlobalVariables.MaxAntTurnAngle));
         }
 
         private Vector2 SteerTowards(Vector2 position, Vector2 velocity, Vector2 target)
         {
-            // Step 1: Calculate the direction vector (corrected)
-            Vector2 direction = target - position; // Fixed: should point towards the target
-
-            // Step 2: Check if the target is already reached (avoid unnecessary calculations)
+            Vector2 direction = target - position; 
             float distanceSquared = direction.LengthSquared();
-            if (distanceSquared < 0.01f) // Lowered threshold for better precision
-                return Vector2.Zero; // No steering needed
-
-            // Step 3: Normalize only if necessary
-            if (distanceSquared > 1e-6f) // Avoid division by zero
+            if (distanceSquared < 0.01f) 
+                return Vector2.Zero; 
+            if (distanceSquared > 1e-6f)
                 direction = Vector2.Normalize(direction);
-
-            // Step 4: Calculate desired velocity in the target direction
+            
             Vector2 desiredVelocity = direction * GlobalVariables.MaxSpeed;
-
-            // Step 5: Calculate the steering force
+            
             Vector2 steeringForce = desiredVelocity - velocity;
-
-            // Step 6: Clamp steering force to maxForce limit (use squared length for efficiency)
+            
             float steeringForceSquared = steeringForce.LengthSquared();
             float maxForceSquared = GlobalVariables.MaxForce * GlobalVariables.MaxForce;
 
             if (steeringForceSquared > maxForceSquared)
-                steeringForce = (steeringForce / MathF.Sqrt(steeringForceSquared)) * GlobalVariables.MaxForce; // Normalize & scale
+                steeringForce = (steeringForce / MathF.Sqrt(steeringForceSquared)) * GlobalVariables.MaxForce;
 
             return steeringForce;
         }
-        public Vector2 Turn(float degrees)
+        public Vector2 GetRotatedVelocity(float degrees)
         {
             float radians = MathF.PI * degrees / 180f;
             float cos = MathF.Cos(radians);

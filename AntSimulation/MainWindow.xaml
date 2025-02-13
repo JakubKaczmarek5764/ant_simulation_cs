@@ -14,25 +14,24 @@
         <Canvas x:Name="SimulationCanvas" Background="Black" MouseDown="SimulationCanvas_MouseDown"/>
 
         <!-- Slider to change max force -->
-        <Slider x:Name="ForceSlider" 
+        <Slider x:Name="Slider" 
                 Minimum="0" 
                 Maximum="1" 
-                Value="0.9" 
+                Value="0.95" 
                 TickFrequency="0.01" 
                 IsSnapToTickEnabled="True"
                 VerticalAlignment="Bottom" 
                 Margin="10"
                 Width="400" 
                 HorizontalAlignment="Center" 
-                ValueChanged="ForceSlider_ValueChanged"/>
+                ValueChanged="Slider_ValueChanged"/>
 
-        <!-- Label to display current force value -->
-        <TextBlock x:Name="ForceLabel" 
+        <TextBlock x:Name="Label" 
                    VerticalAlignment="Bottom" 
                    HorizontalAlignment="Center" 
                    Margin="10,0,0,40" 
                    Foreground="White" 
                    FontSize="16" 
-                   Text="Threshold: 0.9"/>
+                   Text="Threshold: 0.95"/>
     </Grid>
 </Window>

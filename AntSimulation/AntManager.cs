@@ -120,23 +120,16 @@ public class AntManager : Manager
         else if (leftIntensity > frontIntensity && leftIntensity > rightIntensity)
         {
             // Chase left
-            ant.Velocity = ant.Turn(-GlobalVariables.AntTurnAngle);
+            ant.Velocity = ant.GetRotatedVelocity(-GlobalVariables.MaxAntTurnAngle);
         }
         else if (rightIntensity > frontIntensity && rightIntensity > leftIntensity)
         {
             // Chase right
-            ant.Velocity = ant.Turn(GlobalVariables.AntTurnAngle);
+            ant.Velocity = ant.GetRotatedVelocity(GlobalVariables.MaxAntTurnAngle);
 
         }
 
     }
-
-    private static Vector2 VelocityTowards(Vector2 pos, Vector2 target, float length)
-    {
-        return Vector2.Normalize(target - pos) * length;
-    }
-    
-
     private static Vector2 GetDirection(Vector2 velocity, float angleDegrees)
     {
         if (velocity.LengthSquared() == 0) return Vector2.UnitX; // Prevent divide by zero
