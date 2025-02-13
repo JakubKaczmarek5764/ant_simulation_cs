@@ -23,7 +23,7 @@ namespace AntSimulation
 
         public void Move()
         {
-            if (HasFood && Vector2.DistanceSquared(AntHill, Pos) < GlobalVariables.FoodPickupRadiusSquared)
+            if (HasFood && Vector2.DistanceSquared(AntHill, Pos) < GlobalVariables.FoodDropRadiusSquared)
             {
                 // ant reached anthill
                 HasFood = false;

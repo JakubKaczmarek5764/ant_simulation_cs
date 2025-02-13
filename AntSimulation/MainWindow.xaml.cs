@@ -14,7 +14,7 @@ namespace AntSimulation
     {
         private Renderer _renderer;
         private DispatcherTimer timer;
-        private int antCount = 1000; 
+        private int antCount = 100; 
         private int width = 1920;
         private int height = 1080;
         private AntManager antManager;
