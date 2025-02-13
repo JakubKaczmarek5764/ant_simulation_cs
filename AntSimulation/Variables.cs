@@ -26,8 +26,8 @@ public class GlobalVariables
     public static readonly int PheromoneTypesCount = 2;
     public static readonly int PheromoneAddIntensity = 50;
     public static readonly int AntTurnAngle = 15;
-    public static readonly int PheromoneDetectionAngle = 30;
-    public static readonly int PheromoneDetectionDistance = 20;
-    public static readonly int PheromoneAreaSampleRadius = 50;
+    public static readonly int PheromoneDetectionAngle = 45;
+    public static readonly int PheromoneDetectionDistance = 30;
+    public static readonly int PheromoneAreaSampleRadius = 60;
     public static readonly int PheromoneMaxIntensity = 1000;
 }

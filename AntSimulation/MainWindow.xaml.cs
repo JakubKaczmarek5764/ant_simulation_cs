@@ -38,7 +38,7 @@ namespace AntSimulation
         {
             
             Point clickPosition = e.GetPosition(SimulationCanvas);
-            foodManager.CreateFood(25, new Vector2((float)clickPosition.X, (float)clickPosition.Y), 50);
+            foodManager.CreateFood(25, new Vector2((float)clickPosition.X, (float)clickPosition.Y), 100);
         
         }
         private void InitializeSimulation()

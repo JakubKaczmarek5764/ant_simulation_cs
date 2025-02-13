@@ -103,7 +103,6 @@ public class AntManager : Manager
         double frontIntensity = pheromoneManager.GetAverageIntensity(front, ant.HasFood ? 0 : 1, GlobalVariables.PheromoneAreaSampleRadius);
         double leftIntensity = pheromoneManager.GetAverageIntensity(left, ant.HasFood ? 0 : 1, GlobalVariables.PheromoneAreaSampleRadius);
         double rightIntensity = pheromoneManager.GetAverageIntensity(right, ant.HasFood ? 0 : 1, GlobalVariables.PheromoneAreaSampleRadius);
-
         if (frontIntensity == 0 && leftIntensity == 0 && rightIntensity == 0)
         {
             return;
@@ -111,16 +110,17 @@ public class AntManager : Manager
         if (frontIntensity > leftIntensity && frontIntensity > rightIntensity)
         {
             // Chase front
+            
         }
         else if (leftIntensity > frontIntensity && leftIntensity > rightIntensity)
         {
             // Chase left
-            ant.Turn(-GlobalVariables.AntTurnAngle);
+            ant.Velocity = ant.Turn(-GlobalVariables.AntTurnAngle);
         }
         else if (rightIntensity > frontIntensity && rightIntensity > leftIntensity)
         {
             // Chase right
-            ant.Turn(GlobalVariables.AntTurnAngle);
+            ant.Velocity = ant.Turn(GlobalVariables.AntTurnAngle);
 
         }
 
