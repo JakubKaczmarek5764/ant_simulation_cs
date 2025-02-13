@@ -16,9 +16,9 @@
         <!-- Slider to change max force -->
         <Slider x:Name="ForceSlider" 
                 Minimum="0" 
-                Maximum="100" 
-                Value="100" 
-                TickFrequency="0.1" 
+                Maximum="1" 
+                Value="0.8" 
+                TickFrequency="0.01" 
                 IsSnapToTickEnabled="True"
                 VerticalAlignment="Bottom" 
                 Margin="10"
@@ -33,6 +33,6 @@
                    Margin="10,0,0,40" 
                    Foreground="White" 
                    FontSize="16" 
-                   Text="Max Force: 100"/>
+                   Text="Threshold: 0.8"/>
     </Grid>
 </Window>

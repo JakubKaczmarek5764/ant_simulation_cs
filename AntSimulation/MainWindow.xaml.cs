@@ -14,7 +14,7 @@ namespace AntSimulation
     {
         private Renderer _renderer;
         private DispatcherTimer timer;
-        private int antCount = 100; 
+        private int antCount = 1000; 
         private int width = 1920;
         private int height = 1080;
         private AntManager antManager;
@@ -29,8 +29,8 @@ namespace AntSimulation
         {
             if (ForceLabel != null)
             {
-                GlobalVariables.MaxForce = (float)e.NewValue; // Update the global variable
-                ForceLabel.Text = $"Max Force: {GlobalVariables.MaxForce}"; // Update the label to reflect the new value
+                GlobalVariables.PheromoneFollwingDecisionThreshold = (float)e.NewValue; // Update the global variable
+                ForceLabel.Text = $"Threshold: {GlobalVariables.PheromoneFollwingDecisionThreshold}"; // Update the label to reflect the new value
             }
             
         }

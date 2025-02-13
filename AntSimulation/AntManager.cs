@@ -46,16 +46,21 @@ public class AntManager : Manager
     {
         foreach (var ant in Ants) // Chasing food and pheromones
         {
-
+            
             if (!ant.HasFood && !foodManager.IsEmpty())
             {
                 TryToChaseFood(ant);
             }
-            if (ant.Destination.Equals(Vector2.Zero))
+
+            if (ant.WanderingCounter <= 0 && Random.NextDouble() > GlobalVariables.PheromoneFollwingDecisionThreshold)
+            {
+                ant.WanderingCounter = GlobalVariables.AntWanderingCounter;
+            }
+            else if (ant.Destination.Equals(Vector2.Zero) && ant.WanderingCounter <= 0)
             {
                 TryToChasePheromone(ant);
             }
-            
+            ant.WanderingCounter--;
             ant.Move();
         }
         foreach (var ant in Ants) // Verifying if food has been picked up

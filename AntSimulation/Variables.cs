@@ -25,10 +25,12 @@ public class GlobalVariables
     public static readonly int GridWidth = 384;
     public static readonly int GridHeight = 216;
     public static readonly int PheromoneTypesCount = 2;
-    public static readonly int PheromoneAddIntensity = 50;
-    public static readonly int AntTurnAngle = 30;
+    public static readonly int PheromoneAddIntensity = 40;
+    public static readonly int AntTurnAngle = 20;
     public static readonly int PheromoneDetectionAngle = 30;
     public static readonly int PheromoneDetectionDistance = 20;
     public static readonly int PheromoneAreaSampleRadius = 30;
     public static readonly int PheromoneMaxIntensity = 1000;
+    public static float PheromoneFollwingDecisionThreshold = 0.8f;
+    public static readonly int AntWanderingCounter = 20;
 }
