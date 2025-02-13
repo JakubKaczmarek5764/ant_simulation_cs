@@ -14,7 +14,7 @@ namespace AntSimulation
     {
         private Renderer _renderer;
         private DispatcherTimer timer;
-        private int antCount = 1000; 
+        private int antCount = 3000; 
         private int width = 1920;
         private int height = 1080;
         private AntManager antManager;
@@ -38,7 +38,7 @@ namespace AntSimulation
         {
             
             Point clickPosition = e.GetPosition(SimulationCanvas);
-            foodManager.CreateFood(25, new Vector2((float)clickPosition.X, (float)clickPosition.Y), 100);
+            foodManager.CreateFood(75, new Vector2((float)clickPosition.X, (float)clickPosition.Y), 25);
         
         }
         private void InitializeSimulation()
@@ -49,7 +49,7 @@ namespace AntSimulation
             antManager = AntManager.Instance;
             foodManager = FoodManager.Instance;
             pheromoneManager = PheromoneManager.Instance;
-            antManager.CreateAnts(antCount, new Vector2(width / 2, height / 2));
+            antManager.CreateAnts(antCount, GlobalVariables.AntHill);
             // Timer to update simulation
             timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromMilliseconds(1000 / 60);

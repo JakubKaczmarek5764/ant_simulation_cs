@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using Vector = System.Windows.Vector;
 
 namespace AntSimulation;
 
 public class Grid
 {
-    private List<List<PheromoneCell>> _grid = new List<List<PheromoneCell>>();
+    // zrobic cell jako parent class i zrobic anthill cell ktory bedzie zwracac zawsze max intensity i get color bedzie jako kolor anthilla z globalnych zmiennych czy cos
+    private List<List<Cell>> _grid = new List<List<Cell>>();
     private int _width;
     private int _height;
     private int _typesCount;
@@ -22,10 +24,17 @@ public class Grid
         _typesCount = GlobalVariables.PheromoneTypesCount;
         for (int i = 0; i < _width; i++)
         {
-            _grid.Add(new List<PheromoneCell>());
+            _grid.Add(new List<Cell>());
             for (int j = 0; j < _height; j++)
             {
-                _grid[i].Add(new PheromoneCell(_typesCount));
+                Vector2 cellCenter = new Vector2((float)(i * _cellHeight + _cellHeight / 2),
+                    (float)(j * _cellWidth + _cellWidth / 2));
+                if (Vector2.DistanceSquared(cellCenter, GlobalVariables.AntHill) < GlobalVariables.FoodDropRadiusSquared)
+                {
+                    _grid[i].Add(new AntHillCell(_typesCount));
+                }
+                else _grid[i].Add(new PheromoneCell(_typesCount));
+                
             }
         }
 
@@ -62,8 +71,10 @@ public class Grid
     }
     public void AddIntensity(Vector2 pos, int type, int intensity)
     {
+        
         int cellX = (int)(pos.X / _cellWidth);
         int cellY = (int)(pos.Y / _cellHeight);
+        if (cellX < 0 || cellX >= _width || cellY < 0 || cellY >= _height) return;
         _grid[cellX][cellY].AddIntensity(type, intensity);
     }
     public double GetIntensity(int cellX, int cellY, int type)
@@ -72,10 +83,6 @@ public class Grid
     }
     public int GetColor(int cellX, int cellY)
     {
-        int blueIntensity = (int) (GetIntensity(cellX, cellY, 0) * 255 / GlobalVariables.PheromoneMaxIntensity);
-        int redIntensity = (int) (GetIntensity(cellX, cellY, 1) * 255 / GlobalVariables.PheromoneMaxIntensity);
-        
-        return (255 << 24) | (redIntensity << 16) | (0 << 8) | blueIntensity; 
-        // Format: AARRGGBB (fully opaque, red and blue components)
+        return _grid[cellX][cellY].GetColor();
     }
 }

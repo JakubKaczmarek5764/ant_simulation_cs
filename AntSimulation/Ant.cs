@@ -14,7 +14,7 @@ namespace AntSimulation
         public bool HasFood { get; set; }
         public int WanderingCounter { get; set; }
         private static readonly Random Random = new Random();
-        private Vector2 AntHill = new Vector2(GlobalVariables.AreaWidth / 2, GlobalVariables.AreaHeight / 2);
+        private Vector2 AntHill = GlobalVariables.AntHill;
         public Ant(Vector2 pos, Vector2 velocity) : base(pos)
         {
             ChasedFoodIndex = -1;
@@ -43,6 +43,7 @@ namespace AntSimulation
             if (nextPos.Y < 0) Velocity = new Vector2(Velocity.X, Velocity.Y * -1);
             if (nextPos.Y > GlobalVariables.AreaHeight) Velocity = new Vector2(Velocity.X, Velocity.Y * -1);
             Pos += Velocity;
+
             
         }
 

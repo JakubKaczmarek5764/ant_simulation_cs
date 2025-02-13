@@ -17,7 +17,7 @@
         <Slider x:Name="ForceSlider" 
                 Minimum="0" 
                 Maximum="1" 
-                Value="0.8" 
+                Value="0.9" 
                 TickFrequency="0.01" 
                 IsSnapToTickEnabled="True"
                 VerticalAlignment="Bottom" 
@@ -33,6 +33,6 @@
                    Margin="10,0,0,40" 
                    Foreground="White" 
                    FontSize="16" 
-                   Text="Threshold: 0.8"/>
+                   Text="Threshold: 0.9"/>
     </Grid>
 </Window>
